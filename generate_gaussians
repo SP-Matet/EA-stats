@@ -1,0 +1,48 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jan 21 13:41:21 2015
+
+@author: user
+"""
+
+from numpy import *
+import scipy.stats
+import time
+
+
+def generate_gaussian_mix (n,p,k):
+    print 'Simulation launched - n = ' + str(n) + ' - p = ' + str(p) + ' - k = ' + str(k)
+    t = int(time.time() * 1000)
+    
+    # Generates Normal law and random data points X
+    Y = random.normal(size = n)
+    X = random.uniform(size = n * p)
+    X = reshape(X, (n, p))
+    print 'X and Y generated in ' + str(int(time.time() * 1000) - t) + ' ms.'
+    t = int(time.time() * 1000)
+    
+    
+    # Generates random parameters
+    sigma = random.normal(size = k)
+    beta = random.normal(size = k*p)
+    beta = reshape(beta, (k,p))
+    pi = random.uniform(size = k)
+    pi = pi / sum(pi)
+    print 'Parameters generated in ' + str(int(time.time() * 1000) - t) + ' ms.'
+    t = int(time.time() * 1000)
+    
+    
+    # Picks the gaussian according to which which each data point is drawn
+    random_gen = scipy.stats.rv_discrete (values = (range(k), pi))
+    indexes = random_gen.rvs(size = n)
+    print 'Gaussians chosen in ' + str(int(time.time() * 1000) - t) + ' ms.'
+    t = int(time.time() * 1000)
+    
+    # Multiplies everything
+    Y = einsum('ij,ij->i', X, beta[indexes,:]) + multiply(Y,sigma[indexes])
+    print 'Multiplication done in ' + str(int(time.time() * 1000) - t) + ' ms.'
+    
+    rho = 1/sigma
+    phi = beta / sigma    
+    
+    return X, Y, rho, phi
