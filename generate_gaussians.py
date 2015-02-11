@@ -9,6 +9,8 @@ import numpy as np
 import scipy.stats
 import time
 
+scale_sigma = 0.1
+scale_beta = 10
 
 def generate_gaussian_mix (n,p,k):
     print 'Simulation launched - n = ' + str(n) + ' - p = ' + str(p) + ' - k = ' + str(k)
@@ -23,10 +25,11 @@ def generate_gaussian_mix (n,p,k):
     
     
     # Generates random parameters
-    sigma = np.random.normal(size = k)
+    sigma = np.random.normal(loc = 0.0, scale = scale_sigma, size = k)
     sigma = np.abs(sigma)
-    beta = np.random.normal(size = k*p)
+    beta = np.random.normal(loc = 0.0, scale = scale_beta, size = k*p)
     beta = np.reshape(beta, (k,p))
+    beta = beta / np.sqrt(p)  # Normalisation to avoid explosion in high dimension
     pi = np.random.uniform(size = k)
     pi = pi / sum(pi)
     print 'Parameters generated in ' + str(int(time.time() * 1000) - t) + ' ms.'
@@ -46,7 +49,9 @@ def generate_gaussian_mix (n,p,k):
     rho = 1/sigma
     phi = np.divide(beta, np.dot(np.transpose(np.matrix(sigma)), np.ones((1,p))))
     
-    return X, Y, rho, phi, pi
+    rho = np.matrix(rho)
+    pi = np.matrix(pi)    
+
     
+    return np.matrix(X), np.transpose(np.matrix(Y)), np.matrix(phi), rho, pi
     
-X, Y, rhoTh, phiTh, piTh = generate_gaussian_mix (100, 10, 5)
