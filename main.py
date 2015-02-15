@@ -10,7 +10,7 @@ from compare import *
 from generate_gaussians import *
 
 N = 10000
-P = 1
+P = 2
 K = 2
 
 X, Y, phi1, rho1, pi1 = generate_gaussian_mix (N, P, K)

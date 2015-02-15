@@ -14,19 +14,25 @@ import matplotlib.pyplot as plt
 
    
 # Parameters
-delta = 0.1
-myLambda = 0.001
+delta = 0.5
+myLambda = 0
 lautreGamma = 0
 petitSeuil = 0
-seuilConvergence = 0.00001
-TURNS = 100
+seuilConvergence = 0.00000001
+TURNS = 1000
 
 
+# Performs GEM algorithm
+# Returns estimated phi, rho, pi
 def BCD_GEM (X, Y, k):
     X = np.matrix(X)
     Y = np.matrix(Y)
     n = X.shape[0]
     p = X.shape[1]
+    
+    print "delta=" +str(delta)
+    print "lambda=" +str(myLambda)
+    print "gamma=" +str(lautreGamma)
     
     
     # Initialisation (cf. article)
@@ -41,6 +47,7 @@ def BCD_GEM (X, Y, k):
     phi = np.matrix(np.zeros((k,p)))
     rho = np.matrix(np.ones(k) * 2)
     log_likelihood_des_pi = np.zeros(TURNS)
+    difference = 0
         
     for turn in range(TURNS):
         # M Step
@@ -57,14 +64,17 @@ def BCD_GEM (X, Y, k):
         gamma = E_Step(phi, rho, pi, X, Y, n, p, k)
         log_likelihood_des_pi[turn] = log_likelihood_pi (gamma, pi, phi, myLambda, lautreGamma)
         
+    print 'Différence entre tours consécutifs : ' + str(difference)
+    """
     plt.plot(np.array(range(TURNS)), log_likelihood_des_pi)
     plt.show()
+    """
     
     return phi, rho, pi
     
 
 # Compute a partial log likelihood for pi        
-# CHECK
+# CHECKED
 def log_likelihood_pi (gamma, pi, phi, myLambda, lautreGamma):
     resultat = np.sum(np.dot(gamma, np.transpose(np.log(pi))))
     resultat = -1 * resultat / gamma.shape[0]
@@ -73,7 +83,7 @@ def log_likelihood_pi (gamma, pi, phi, myLambda, lautreGamma):
     
     
 # Performs E-Step, reurns gamma
-# CHECK
+# CHECKED
 def E_Step (phi, rho, pi, X, Y, n, p, k):
     A = np.dot(Y, rho)
     B = np.dot(X, np.transpose(phi))
@@ -89,16 +99,16 @@ def E_Step (phi, rho, pi, X, Y, n, p, k):
 # Generalized M Step, returns phi, rho, pi
 def M_Step (phi, rho, pi, X, Y, gamma, n, p, k):
     # Adjust pi
+    # À peu près checked
     pi_barre = np.sum(gamma, axis = 0) / n
     valeur_initiale = log_likelihood_pi (gamma, pi, phi, myLambda, lautreGamma)
     t=1
     valeur = log_likelihood_pi(gamma, pi + t*(pi_barre - pi), phi, myLambda, lautreGamma)
-    while valeur > valeur_initiale + petitSeuil:
+    while valeur > valeur_initiale:
         t = t * delta
         valeur = log_likelihood_pi(gamma, pi + t*(pi_barre - pi), phi, myLambda, lautreGamma)
-    if (valeur < valeur_initiale):
-        pi = pi + t*(pi_barre - pi)
-    log_likelihood_pi(gamma, pi + t*(pi_barre - pi), phi, myLambda, lautreGamma)
+    
+    pi = pi + t*(pi_barre - pi)
         
     # Compute rho and phi
     for r in range (k):
@@ -112,18 +122,15 @@ def M_Step (phi, rho, pi, X, Y, gamma, n, p, k):
         
         for j in range (p):
             Sj = -1 * rho[0,r] * np.dot(np.transpose(Xtilde[:,j]), Ytilde)
-            Sj = Sj + np.sum(np.multiply(np.dot (np.transpose(Xtilde[:,j]),Xtilde), np.transpose(phi[r,:])))
+            buff = np.multiply(np.dot (np.transpose(Xtilde[:,j]),Xtilde), np.transpose(phi[r,:]))
+            Sj = Sj + buff - buff[0,j]
             Sj = Sj[0,0]
             threshold = n * myLambda*(pi[0,r]**lautreGamma)
             
             if (Sj > threshold):
                 phi[r,j] = (threshold - Sj) / np.dot(np.transpose(Xtilde[:,j]), Xtilde[:,j])
-                # print Sj
-                # print np.dot(np.transpose(Xtilde[:,j]), Xtilde[:,j])
             elif (Sj < -1 * threshold):
                 phi[r,j] = -1 * (threshold + Sj) /  np.dot(np.transpose(Xtilde[:,j]), Xtilde[:,j])
-                # print Sj
-                # print np.dot(np.transpose(Xtilde[:,j]), Xtilde[:,j])
             else:
                 phi[r,j] = 0
                  
