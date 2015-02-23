@@ -31,39 +31,39 @@ def compare (phi1, phi2, pi1, pi2, rho1, rho2):
         
     print "Estimated quadratic error : " + str(np.sum(estimated_quadratic_distance)/(N*turns))
     print "Null hypothesis error : " + str(h0/(N*turns))
-    print "Matet Ratio : " + str(np.sum(estimated_quadratic_distance / h0))
+    print "Score : " + str(np.sum(estimated_quadratic_distance / h0))
     
-    
-    n = 1000
-    k = pi1.shape[1]
-    Y = np.random.normal(size = n)
-    X = np.random.normal(size = n * p)
-    X = np.matrix(np.reshape(X, (n, p)))
-    
-    random_gen = scipy.stats.rv_discrete (values = (range(k), pi1[0,:]))
-    indexes = random_gen.rvs(size = n)
-    for i in range (n):
-        Y[i] = 1/rho1[0,indexes[i]] * Y[i] +  np.sum(np.dot(np.matrix((X[i,:])), np.transpose(np.matrix(phi1[indexes[i], :])))) / rho1[0,indexes[i]]
-    
-    X = np.array(X)
-    
-    plt.plot(X,Y, 'o')
-    plt.show
-    
-    Y = np.random.normal(size = n)
-    X = np.random.normal(size = n * p)
-    X = np.matrix(np.reshape(X, (n, p)))
-    
-    random_gen = scipy.stats.rv_discrete (values = (range(k), pi2[0,:]))
-    indexes = random_gen.rvs(size = n)
-    for i in range (n):
-        Y[i] = 1/rho2[0,indexes[i]] * Y[i] +  np.sum(np.dot(np.matrix((X[i,:])), np.transpose(np.matrix(phi2[indexes[i], :])))) / rho2[0,indexes[i]]
-    
-    X = np.array(X)
-    
-    plt.plot(X,Y, 'ro')
-    
-    plt.show
+    if (p == 1):
+        n = 1000
+        k = pi1.shape[1]
+        Y = np.random.normal(size = n)
+        X = np.random.normal(size = n * p)
+        X = np.matrix(np.reshape(X, (n, p)))
+        
+        random_gen = scipy.stats.rv_discrete (values = (range(k), pi1[0,:]))
+        indexes = random_gen.rvs(size = n)
+        for i in range (n):
+            Y[i] = 1/rho1[0,indexes[i]] * Y[i] +  np.sum(np.dot(np.matrix((X[i,:])), np.transpose(np.matrix(phi1[indexes[i], :])))) / rho1[0,indexes[i]]
+        
+        X = np.array(X)
+        
+        plt.plot(X,Y, 'o')
+        plt.show
+        
+        Y = np.random.normal(size = n)
+        X = np.random.normal(size = n * p)
+        X = np.matrix(np.reshape(X, (n, p)))
+        
+        random_gen = scipy.stats.rv_discrete (values = (range(k), pi2[0,:]))
+        indexes = random_gen.rvs(size = n)
+        for i in range (n):
+            Y[i] = 1/rho2[0,indexes[i]] * Y[i] +  np.sum(np.dot(np.matrix((X[i,:])), np.transpose(np.matrix(phi2[indexes[i], :])))) / rho2[0,indexes[i]]
+        
+        X = np.array(X)
+        
+        plt.plot(X,Y, 'ro')
+        
+        plt.show
     
     
     

@@ -11,8 +11,8 @@ import time
 import matplotlib.pyplot as plt
 
 
-scale_sigma = 0.1
-scale_beta = 1
+scale_sigma = 0
+scale_beta = 10
 
 def generate_gaussian_mix (n,p,k):
     print 'Simulation launched - n = ' + str(n) + ' - p = ' + str(p) + ' - k = ' + str(k)
@@ -20,18 +20,19 @@ def generate_gaussian_mix (n,p,k):
     
     # Generates Normal law and random data points X
     Y = np.random.normal(size = n)
-    X = np.random.normal(size = n * p)
+    X = np.random.uniform(low=0.0, high=5, size = n * p)
     X = np.reshape(X, (n, p))
     print 'X and Y generated in ' + str(int(time.time() * 1000) - t) + ' ms.'
     t = int(time.time() * 1000)
     
     
     # Generates random parameters
-    sigma = np.random.normal(loc = 0.0, scale = scale_sigma, size = k)
-    sigma = np.abs(sigma)
-    beta = np.random.normal(loc = 0.0, scale = scale_beta, size = k*p)
+    #sigma = np.random.normal(loc = 1.0, scale = scale_sigma, size = k)
+    sigma = np.ones(k)
+    #sigma = np.abs(sigma)
+    beta = np.random.normal(loc = 10.0, scale = scale_beta, size = k*p)
     beta = np.reshape(beta, (k,p))
-    beta = beta / np.sqrt(p)  # Normalisation to avoid explosion in high dimension
+    beta[0,:] = 0
     pi = np.random.uniform(size = k)
     pi = pi / sum(pi)
     print 'Parameters generated in ' + str(int(time.time() * 1000) - t) + ' ms.'
@@ -54,8 +55,6 @@ def generate_gaussian_mix (n,p,k):
     
     rho = np.matrix(rho)
     pi = np.matrix(pi)  
-    
-    plt.plot(X,Y, 'go')
     
     return np.matrix(X), np.transpose(np.matrix(Y)), np.matrix(phi), rho, pi
     
