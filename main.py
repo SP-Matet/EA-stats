@@ -9,9 +9,9 @@ from BCD_GEM import *
 from compare import *
 from generate_gaussians import *
 
-N = 1000
-P = 2
-K = 2
+N = 10000
+P = 20
+K = 5
 
 X, Y, phi1, rho1, pi1 = generate_gaussian_mix (N, P, K)
 phi2, rho2, pi2 = BCD_GEM (X,Y, K, myLambda)

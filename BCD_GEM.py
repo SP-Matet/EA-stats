@@ -40,7 +40,7 @@ def BCD_GEM (X, Y, k, l):
     # Initialisation (cf. article)
     # Picks the gaussian according to which which each data point is drawn
     indexes = np.random.randint(k, size = n)
-    gamma = np.matrix(np.zeros((n,k)))
+    gamma = np.matrix(np.ones((n,k)))
     for i in range (n):
         gamma[i,indexes[i]] = 9
     gamma[:,:] = gamma / (k + 8)
@@ -106,6 +106,7 @@ def M_Step (phi, rho, pi, X, Y, gamma, n, p, k):
     pi_barre = np.sum(gamma, axis = 0) / n
     
     if (lautreGamma != 0 and myLambda != 0) :
+        print 'Pof'
         valeur_initiale = log_likelihood_pi (gamma, pi, phi)
         t=1
         valeur = log_likelihood_pi(gamma, pi_barre - pi, phi)
@@ -135,8 +136,8 @@ def M_Step (phi, rho, pi, X, Y, gamma, n, p, k):
                 norme2X = np.sum(np.dot(np.transpose(Xtilde[:,j]), Xtilde[:,j]))                
                 if (norme2X != 0):
                     Sj = rho[0,r] * np.dot(np.transpose(Xtilde[:,j]), Ytilde)
-                    buff = np.multiply(np.dot (np.transpose(Xtilde[:,j]),Xtilde), np.transpose(phi[r,:]))
-                    Sj = np.sum(buff) - buff[0,j] - Sj
+                    buff2 = np.multiply(np.dot (np.transpose(Xtilde[:,j]),Xtilde), phi[r,:])
+                    Sj = np.sum(buff2) - buff2[0,j] - Sj
         
                     threshold = n * myLambda*(pi[0,r]**lautreGamma)
                     
